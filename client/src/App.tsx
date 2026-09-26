@@ -156,8 +156,8 @@ function Brand({ compact = false, light = false }: { compact?: boolean; light?: 
 function InstitutionBrand() {
   return (
     <div className="space-y-3">
-      <div className="font-display text-2xl font-bold tracking-tight text-white">Rx-Exam</div>
-      <div className="space-y-1 text-sm font-medium text-slate-300">
+      <div className="font-display text-4xl font-bold tracking-tight text-white">Rx-Exam</div>
+      <div className="space-y-2 text-base font-medium text-slate-300">
         <div>Bagian Farmakologi</div>
         <div>Prodi S1 Kedokteran</div>
         <div>Universitas Tadulako</div>
@@ -278,11 +278,11 @@ function LoginPage({ onStudentLogin, error }: { onStudentLogin: () => void; erro
                 </p>
               </div>
             </div>
-            <div className="mt-6">
-              {error
-                ? <Callout tone="warning" title="Sign-in unavailable">{error}</Callout>
-                : <Callout tone="info" title="Secure sign-in">Google identity is handled by Supabase Auth. Your NIM is verified against the institution participant record before an attempt is created.</Callout>}
-            </div>
+            {error && (
+              <div className="mt-6">
+                <Callout tone="warning" title="Sign-in unavailable">{error}</Callout>
+              </div>
+            )}
           </div>
           <div className="p-5 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Assessment only · no clinical prescribing</div>
         </section>
