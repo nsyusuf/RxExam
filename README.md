@@ -1,3 +1,0 @@
-# RxExam
-
-RxExam project.
