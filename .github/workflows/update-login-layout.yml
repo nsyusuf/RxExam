@@ -1,0 +1,56 @@
+name: Update RxExam login layout
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update login layout
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("client/src/App.tsx")
+          text = path.read_text(encoding="utf-8")
+
+          old_brand = '''      <div className="font-display text-2xl font-bold tracking-tight text-white">Rx-Exam</div>\n      <div className="space-y-1 text-sm font-medium text-slate-300">'''
+          new_brand = '''      <div className="font-display text-4xl font-bold tracking-tight text-white">Rx-Exam</div>\n      <div className="space-y-2 text-base font-medium text-slate-300">'''
+
+          if old_brand not in text:
+              raise SystemExit("Expected InstitutionBrand markup was not found; no changes made.")
+          text = text.replace(old_brand, new_brand, 1)
+
+          old_callout = '''            <div className="mt-6">\n              {error\n                ? <Callout tone="warning" title="Sign-in unavailable">{error}</Callout>\n                : <Callout tone="info" title="Secure sign-in">Google identity is handled by Supabase Auth. Your NIM is verified against the institution participant record before an attempt is created.</Callout>}\n            </div>'''
+          new_callout = '''            {error && (\n              <div className="mt-6">\n                <Callout tone="warning" title="Sign-in unavailable">{error}</Callout>\n              </div>\n            )}'''
+
+          if old_callout not in text:
+              raise SystemExit("Expected Secure sign-in callout markup was not found; no changes made.")
+          text = text.replace(old_callout, new_callout, 1)
+
+          path.write_text(text, encoding="utf-8")
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add client/src/App.tsx
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update RxExam login branding"
+          git push
+
+      - name: Remove one-time workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/update-login-layout.yml
+          git commit -m "Remove one-time login update workflow"
+          git push
